@@ -2,7 +2,7 @@ package env
 
 import (
 	"fmt"
-	"gitlab.com/denislinkit/airpay-telco/pkd/util"
+	"github.com/DenisBarabanshchikov/subscription/pkg/util"
 	"net/url"
 	"os"
 	"strconv"

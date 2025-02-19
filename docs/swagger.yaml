@@ -1,59 +1,19 @@
 definitions:
-  request.Endpoint:
+  request.CreateCustomer:
     properties:
-      bodyParams:
-        items:
-          type: string
-        type: array
-      host:
-        type: string
-      method:
-        type: string
-      name:
-        type: string
-      pathParams:
-        items:
-          type: string
-        type: array
-      queryParams:
-        items:
-          type: string
-        type: array
-      url:
+      email:
         type: string
     type: object
-  request.TelcoCreate:
+  request.SubscribeCustomer:
     properties:
-      code:
-        type: string
-      endpoints:
-        items:
-          $ref: '#/definitions/request.Endpoint'
-        type: array
-      id:
+      plan:
         type: string
     type: object
-  response.Endpoint:
+  response.CreateCustomer:
     properties:
-      bodyParams:
-        items:
-          type: string
-        type: array
-      host:
+      customerId:
         type: string
-      method:
-        type: string
-      name:
-        type: string
-      pathParams:
-        items:
-          type: string
-        type: array
-      queryParams:
-        items:
-          type: string
-        type: array
-      url:
+      externalCustomerId:
         type: string
     type: object
   response.ErrorResponse:
@@ -63,40 +23,49 @@ definitions:
       message:
         type: string
     type: object
-  response.TelcoGetResponse:
+  response.SubscribeCustomer:
     properties:
-      code:
+      externalSubscriptionId:
         type: string
-      endpoints:
-        items:
-          $ref: '#/definitions/response.Endpoint'
-        type: array
-      id:
+      subscriptionId:
+        type: string
+    type: object
+  response.SubscriptionStatus:
+    properties:
+      externalSubscriptionId:
+        type: string
+      plan:
+        type: string
+      status:
+        type: string
+      subscriptionId:
         type: string
     type: object
 info:
   contact: {}
-  description: This is the API documentation for the AirPay Telco Manager API service.
-  title: AirPay Telco Manager API Documentation
-  version: 0.1.0
+  description: This is the API documentation for the subscription service.
+  title: Subscription Service API Documentation
+  version: 1.0.0
 paths:
-  /api/v1/telco:
-    put:
+  /api/v1/customers:
+    post:
       consumes:
       - application/json
-      description: Put telco in DB
+      description: Creating a new customer
       parameters:
-      - description: Telco data
+      - description: Customer data
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/request.TelcoCreate'
+          $ref: '#/definitions/request.CreateCustomer'
       produces:
       - application/json
       responses:
-        "201":
-          description: Created - No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateCustomer'
         "400":
           description: Bad Request
           schema:
@@ -105,16 +74,56 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.ErrorResponse'
-      summary: Put telco
       tags:
-      - Telco
-  /api/v1/telco/{code}:
-    get:
-      description: Retrieve a telco record from the DB using its ID
+      - Customer
+  /api/v1/customers/{customerId}/subscriptions:
+    post:
+      consumes:
+      - application/json
+      description: 'Subscribe a customer (Available plans: Core, Growth, Premium)'
       parameters:
-      - description: Telco Code
+      - description: customerId
         in: path
-        name: code
+        name: customerId
+        required: true
+        type: string
+      - description: Subscription data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.SubscribeCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SubscribeCustomer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - Customer
+  /api/v1/customers/{customerId}/subscriptions/{subscriptionId}:
+    get:
+      consumes:
+      - application/json
+      description: Get subscription status
+      parameters:
+      - description: customerId
+        in: path
+        name: customerId
+        required: true
+        type: string
+      - description: subscriptionId
+        in: path
+        name: subscriptionId
         required: true
         type: string
       produces:
@@ -123,20 +132,35 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.TelcoGetResponse'
+            $ref: '#/definitions/response.SubscriptionStatus'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "404":
-          description: Not Found
           schema:
             $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.ErrorResponse'
-      summary: Get telco by ID
       tags:
-      - Telco
+      - Customer
+  /api/v1/stripe/webhook:
+    post:
+      consumes:
+      - application/json
+      description: Handles the stripe webhook
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted - no content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - Stripe
 swagger: "2.0"

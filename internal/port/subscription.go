@@ -5,6 +5,9 @@ import (
 	"github.com/DenisBarabanshchikov/subscription/internal/model"
 )
 
-type Customer interface {
-	CreateCustomer(ctx context.Context, email string) model.Customer
+type Subscription interface {
+	CreateCustomer(ctx context.Context, customer model.Customer) error
+	GetCustomer(ctx context.Context, id string) (*model.Customer, error)
+	CreateSubscription(ctx context.Context, subscription model.Subscription) error
+	GetSubscription(ctx context.Context, customerId, subscriptionId string) (*model.Subscription, error)
 }

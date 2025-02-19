@@ -23,6 +23,6 @@ services:
       - AWS_MAX_ATTEMPTS=10
     volumes:
       - ./scripts/dynamo:/aws
-    entrypoint: "bash -c ./telco.sh"
+    entrypoint: "bash -c ./subscription.sh"
     networks:
       - local-service

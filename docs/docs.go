@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/telco": {
-            "put": {
-                "description": "Put telco in DB",
+        "/api/v1/customers": {
+            "post": {
+                "description": "Creating a new customer",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,23 +25,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Telco"
+                    "Customer"
                 ],
-                "summary": "Put telco",
                 "parameters": [
                     {
-                        "description": "Telco data",
+                        "description": "Customer data",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.TelcoCreate"
+                            "$ref": "#/definitions/request.CreateCustomer"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created - No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateCustomer"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -58,30 +60,41 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/telco/{code}": {
-            "get": {
-                "description": "Retrieve a telco record from the DB using its ID",
+        "/api/v1/customers/{customerId}/subscriptions": {
+            "post": {
+                "description": "Subscribe a customer (Available plans: Core, Growth, Premium)",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Telco"
+                    "Customer"
                 ],
-                "summary": "Get telco by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Telco Code",
-                        "name": "code",
+                        "description": "customerId",
+                        "name": "customerId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Subscription data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SubscribeCustomer"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.TelcoGetResponse"
+                            "$ref": "#/definitions/response.SubscribeCustomer"
                         }
                     },
                     "400": {
@@ -90,8 +103,83 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.ErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/customers/{customerId}/subscriptions/{subscriptionId}": {
+            "get": {
+                "description": "Get subscription status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "customerId",
+                        "name": "customerId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "subscriptionId",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SubscriptionStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stripe/webhook": {
+            "post": {
+                "description": "Handles the stripe webhook",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stripe"
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted - no content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.ErrorResponse"
                         }
@@ -107,89 +195,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "request.Endpoint": {
+        "request.CreateCustomer": {
             "type": "object",
             "properties": {
-                "bodyParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "host": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "pathParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "queryParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "url": {
+                "email": {
                     "type": "string"
                 }
             }
         },
-        "request.TelcoCreate": {
+        "request.SubscribeCustomer": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "endpoints": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.Endpoint"
-                    }
-                },
-                "id": {
+                "plan": {
                     "type": "string"
                 }
             }
         },
-        "response.Endpoint": {
+        "response.CreateCustomer": {
             "type": "object",
             "properties": {
-                "bodyParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "host": {
+                "customerId": {
                     "type": "string"
                 },
-                "method": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "pathParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "queryParams": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "url": {
+                "externalCustomerId": {
                     "type": "string"
                 }
             }
@@ -205,19 +233,30 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TelcoGetResponse": {
+        "response.SubscribeCustomer": {
             "type": "object",
             "properties": {
-                "code": {
+                "externalSubscriptionId": {
                     "type": "string"
                 },
-                "endpoints": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.Endpoint"
-                    }
+                "subscriptionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SubscriptionStatus": {
+            "type": "object",
+            "properties": {
+                "externalSubscriptionId": {
+                    "type": "string"
                 },
-                "id": {
+                "plan": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "subscriptionId": {
                     "type": "string"
                 }
             }
@@ -227,12 +266,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1.0",
+	Version:          "1.0.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "AirPay Telco Manager API Documentation",
-	Description:      "This is the API documentation for the AirPay Telco Manager API service.",
+	Title:            "Subscription Service API Documentation",
+	Description:      "This is the API documentation for the subscription service.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

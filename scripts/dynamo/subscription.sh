@@ -1,0 +1,1 @@
+aws dynamodb create-table --cli-input-json file://subscription_dev.json --endpoint-url http://dynamodb:8000
