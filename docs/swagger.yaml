@@ -1,0 +1,142 @@
+definitions:
+  request.Endpoint:
+    properties:
+      bodyParams:
+        items:
+          type: string
+        type: array
+      host:
+        type: string
+      method:
+        type: string
+      name:
+        type: string
+      pathParams:
+        items:
+          type: string
+        type: array
+      queryParams:
+        items:
+          type: string
+        type: array
+      url:
+        type: string
+    type: object
+  request.TelcoCreate:
+    properties:
+      code:
+        type: string
+      endpoints:
+        items:
+          $ref: '#/definitions/request.Endpoint'
+        type: array
+      id:
+        type: string
+    type: object
+  response.Endpoint:
+    properties:
+      bodyParams:
+        items:
+          type: string
+        type: array
+      host:
+        type: string
+      method:
+        type: string
+      name:
+        type: string
+      pathParams:
+        items:
+          type: string
+        type: array
+      queryParams:
+        items:
+          type: string
+        type: array
+      url:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  response.TelcoGetResponse:
+    properties:
+      code:
+        type: string
+      endpoints:
+        items:
+          $ref: '#/definitions/response.Endpoint'
+        type: array
+      id:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is the API documentation for the AirPay Telco Manager API service.
+  title: AirPay Telco Manager API Documentation
+  version: 0.1.0
+paths:
+  /api/v1/telco:
+    put:
+      consumes:
+      - application/json
+      description: Put telco in DB
+      parameters:
+      - description: Telco data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TelcoCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created - No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Put telco
+      tags:
+      - Telco
+  /api/v1/telco/{code}:
+    get:
+      description: Retrieve a telco record from the DB using its ID
+      parameters:
+      - description: Telco Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TelcoGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get telco by ID
+      tags:
+      - Telco
+swagger: "2.0"

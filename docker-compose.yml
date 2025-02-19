@@ -1,0 +1,28 @@
+version: '3'
+networks:
+  local-service:
+    driver: bridge
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: dynamodb
+    ports:
+      - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+    networks:
+      - local-service
+  dynamodb-setup:
+    image: amazon/aws-cli:latest
+    depends_on:
+      - dynamodb
+    environment:
+      - AWS_ACCESS_KEY_ID=foo
+      - AWS_SECRET_ACCESS_KEY=bar
+      - AWS_DEFAULT_REGION=eu-central-1
+      - AWS_DEFAULT_OUTPUT=json
+      - AWS_MAX_ATTEMPTS=10
+    volumes:
+      - ./scripts/dynamo:/aws
+    entrypoint: "bash -c ./telco.sh"
+    networks:
+      - local-service

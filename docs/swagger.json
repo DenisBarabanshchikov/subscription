@@ -1,0 +1,218 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the API documentation for the AirPay Telco Manager API service.",
+        "title": "AirPay Telco Manager API Documentation",
+        "contact": {},
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/v1/telco": {
+            "put": {
+                "description": "Put telco in DB",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Telco"
+                ],
+                "summary": "Put telco",
+                "parameters": [
+                    {
+                        "description": "Telco data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.TelcoCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created - No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/telco/{code}": {
+            "get": {
+                "description": "Retrieve a telco record from the DB using its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Telco"
+                ],
+                "summary": "Get telco by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Telco Code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TelcoGetResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "request.Endpoint": {
+            "type": "object",
+            "properties": {
+                "bodyParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "host": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "queryParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.TelcoCreate": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.Endpoint"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.Endpoint": {
+            "type": "object",
+            "properties": {
+                "bodyParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "host": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "queryParams": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.TelcoGetResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Endpoint"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,55 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output directories
+bin/
+cmd/main
+
+# Test binary, build artifacts, and coverage reports
+*.test
+*.out
+coverage.out
+
+# Output of the go coverage tool
+*.cov
+
+# Dependency directories (remove the comment below if you use Go modules)
+# vendor/
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Logs
+*.log
+
+# IDE and editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+*.lnk
+
+# Environment variables file
+.env
+
+# Build cache
+/.cache/
+/cache/
+
+# Test cache
+.testcache/
+
+# Node modules (if using Node.js or frontend assets)
+node_modules/
+
+# Ignore temporary files
+*~
